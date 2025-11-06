@@ -17,7 +17,7 @@ router.post("/upload", verifyToken, upload.single("file"), async (req, res) => {
 
   const { slug, path: filePath } = saveFile(req.file, subdomain);
 
-  await pool.query("INSERT INTO files (user_id, name, slug, path) VALUES ($1,$2,$3,$4)", [
+  await pool.query("INSERT INTO uploads (user_id, filename, filepath, mimetype) VALUES ($1, $2, $3, $4)", [
     user.id,
     req.file.originalname,
     slug,
