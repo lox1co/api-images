@@ -1,0 +1,28 @@
+version: "1.0"
+
+
+services:
+app:
+image: node:20
+build:
+context: .
+env_file:
+- .env
+ports:
+- "3000:3000"
+volumes:
+- ./uploads:/app/uploads
+depends_on:
+- postgres
+command: ["node", "src/server.js"]
+
+
+postgres:
+image: postgres:16
+restart: always
+environment:
+POSTGRES_USER: user
+POSTGRES_PASSWORD: password
+POSTGRES_DB: imageapi
+volumes:
+- ./data:/var/lib/postgresql/data
