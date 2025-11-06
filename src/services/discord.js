@@ -1,6 +1,6 @@
 // import fetch from "node:fe";
 
-export const getDiscordUser = async (code) => {
+const getDiscordUser = async (code) => {
   const params = new URLSearchParams({
     client_id: process.env.DISCORD_CLIENT_ID,
     client_secret: process.env.DISCORD_CLIENT_SECRET,
@@ -22,3 +22,4 @@ export const getDiscordUser = async (code) => {
 
   return userRes.json();
 };
+module.exports = { getDiscordUser };

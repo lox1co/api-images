@@ -1,6 +1,5 @@
-import jwt from "jsonwebtoken";
-
-export const verifyToken = (req, res, next) => {
+const jwt = require("jsonwebtoken");
+const verifyToken = (req, res, next) => {
   const auth = req.headers.authorization;
   if (!auth?.startsWith("Bearer ")) return res.status(401).json({ error: "No autorizado" });
 
@@ -13,3 +12,5 @@ export const verifyToken = (req, res, next) => {
     return res.status(401).json({ error: "Token inválido" });
   }
 };
+
+module.exports = { verifyToken };

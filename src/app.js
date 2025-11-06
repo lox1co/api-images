@@ -1,9 +1,9 @@
-import express from "express";
-import helmet from "helmet";
-import morgan from "morgan";
-import cors from "cors";
-import authRoutes from "./routes/auth.js";
-import uploadRoutes from "./routes/upload.js";
+const express = require("express");
+const helmet = require("helmet");
+const morgan = require("morgan");
+const cors = require("cors");
+const authRoutes = require("./routes/auth.js");
+const uploadRoutes = require("./routes/upload.js");
 
 const app = express();
 app.use(express.json());
@@ -19,4 +19,4 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: "Error interno del servidor" });
 });
 
-export default app;
+module.exports = app;

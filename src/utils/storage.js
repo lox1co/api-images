@@ -1,8 +1,7 @@
-import fs from "fs";
-import path from "path";
-import crypto from "node:crypto";
-
-export const saveFile = (file, subdomain) => {
+const fs = require("fs");
+const path = require("path");
+const crypto = require("node:crypto");
+const saveFile = (file, subdomain) => {
   const slug = crypto.randomBytes(6).toString("hex");
   const ext = path.extname(file.originalname);
   const baseDir = path.join(process.env.UPLOAD_DIR, subdomain);
@@ -11,3 +10,5 @@ export const saveFile = (file, subdomain) => {
   fs.renameSync(file.path, finalPath);
   return { slug, path: finalPath };
 };
+
+module.exports = { saveFile };

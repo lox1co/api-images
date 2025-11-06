@@ -1,8 +1,8 @@
-import app from "./app.js";
-import pool from "./db.js";
-import dotenv from "dotenv";
+const dotenv = require("dotenv");
 dotenv.config();
 
+const app = require("./app.js");
+const pool = require("./db.js");
 const PORT = process.env.PORT || 3000;
 
 (async () => {

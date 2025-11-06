@@ -1,9 +1,9 @@
-import express from "express";
-import multer from "multer";
-import path from "path";
-import pool from "../db.js";
-import { verifyToken } from "../middleware/auth.js";
-import { saveFile } from "../utils/storage.js";
+const express = require("express");
+const multer = require("multer");
+const path = require("path");
+const pool = require("../db.js");
+const { verifyToken } = require("../middleware/auth.js");
+const { saveFile } = require("../utils/storage.js");
 
 const router = express.Router();
 const upload = multer({ dest: "temp/" });
@@ -28,4 +28,4 @@ router.post("/upload", verifyToken, upload.single("file"), async (req, res) => {
   res.json({ url });
 });
 
-export default router;
+module.exports = router;

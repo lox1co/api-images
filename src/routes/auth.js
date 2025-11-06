@@ -1,7 +1,7 @@
-import express from "express";
-import jwt from "jsonwebtoken";
-import pool from "../db.js";
-import { getDiscordUser } from "../services/discord.js";
+const express = require("express");
+const jwt = require("jsonwebtoken");
+const pool = require("../db.js");
+const { getDiscordUser } = require("../services/discord.js");
 
 const router = express.Router();
 
@@ -33,4 +33,4 @@ router.get("/callback", async (req, res) => {
   res.json({ token, subdomain: user.subdomain });
 });
 
-export default router;
+module.exports = router;
