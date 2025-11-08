@@ -16,7 +16,7 @@ app.use(cors());
 
 app.use("/api/v1/users", usersRouter);
 app.use("/api/v1/upload", uploadRouter);
-app.use(vhost(`*.localhost`, serve));
+app.use(vhost(`*.loxico.site`, serve));
 
 app.use((err, req, res, next) => {
   console.error(err);
