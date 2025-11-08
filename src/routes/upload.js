@@ -1,31 +1,40 @@
 const express = require("express");
 const multer = require("multer");
 const path = require("path");
+const fs = require("fs");
 const pool = require("../db.js");
-const { verifyToken } = require("../middleware/auth.js");
-const { saveFile } = require("../utils/storage.js");
+const { auth } = require("../middleware/auth.js");
 
 const router = express.Router();
-const upload = multer({ dest: "temp/" });
 
-router.post("/upload", verifyToken, upload.single("file"), async (req, res) => {
-  const { discord_id, subdomain } = req.user;
+const uploadDir = process.env.UPLOAD_DIR || "uploads";
+if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
 
-  const userRes = await pool.query("SELECT id FROM users WHERE discord_id = $1", [discord_id]);
-  const user = userRes.rows[0];
-  if (!user) return res.status(404).json({ error: "Usuario no encontrado" });
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const userDir = path.join(uploadDir, req.user.subdomain);
+    if (!fs.existsSync(userDir)) fs.mkdirSync(userDir, { recursive: true });
+    cb(null, userDir);
+  },
+  filename: (req, file, cb) => {
+    const filename = Date.now() + path.extname(file.originalname);
+    cb(null, filename);
+  },
+});
+const upload = multer({ storage });
 
-  const { slug, path: filePath } = saveFile(req.file, subdomain);
+router.post("/", auth(), upload.single("file"), async (req, res) => {
+  try {
+    const { filename } = req.file;
 
-  await pool.query("INSERT INTO uploads (user_id, filename, filepath, mimetype) VALUES ($1, $2, $3, $4)", [
-    user.id,
-    req.file.originalname,
-    slug,
-    filePath,
-  ]);
+    await pool.query(`INSERT INTO files (user_id, filename) VALUES ($1, $2)`, [req.user.id, filename]);
 
-  const url = `https://${subdomain}.${process.env.DOMAIN}/${slug}`;
-  res.json({ url });
+    const fileUrl = `https://${req.user.subdomain}.${process.env.DOMAIN}/${path.parse(filename).name}`;
+    res.json({ url: fileUrl });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Error al subir archivo" });
+  }
 });
 
 module.exports = router;

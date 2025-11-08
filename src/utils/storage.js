@@ -8,6 +8,7 @@ const saveFile = (file, subdomain) => {
   fs.mkdirSync(baseDir, { recursive: true });
   const finalPath = path.join(baseDir, slug + ext);
   fs.renameSync(file.path, finalPath);
+  console.log(finalPath);
   return { slug, path: finalPath };
 };
 

@@ -1,16 +1,30 @@
-const jwt = require("jsonwebtoken");
-const verifyToken = (req, res, next) => {
-  const auth = req.headers.authorization;
-  if (!auth?.startsWith("Bearer ")) return res.status(401).json({ error: "No autorizado" });
+const pool = require("../db.js");
+function auth(requiredRole = null) {
+  return async (req, res, next) => {
+    try {
+      const header = req.headers.authorization;
+      if (!header?.startsWith("Bearer ")) {
+        return res.status(401).json({ error: "Token requerido" });
+      }
 
-  const token = auth.split(" ")[1];
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
-    next();
-  } catch (err) {
-    return res.status(401).json({ error: "Token inválido" });
-  }
-};
+      const token = header.split(" ")[1];
+      const { rows } = await pool.query("SELECT * FROM users WHERE token = $1", [token]);
 
-module.exports = { verifyToken };
+      if (!rows.length) return res.status(401).json({ error: "Token inválido" });
+
+      const user = rows[0];
+      req.user = user;
+
+      if (requiredRole && user.role !== requiredRole && user.role !== "owner") {
+        return res.status(403).json({ error: "Permisos insuficientes" });
+      }
+
+      next();
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Error al validar token" });
+    }
+  };
+}
+
+module.exports = { auth };
